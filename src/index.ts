@@ -1,135 +1,67 @@
 /*
 
-Задача 1
-
-Управління фінансами: 
-Створіть клас Account для ведення банківського рахунку
-Мають бути такі поля:
-- balance
-- status
-- метод додавання коштів
-- метод зняття коштів
-- метод відображення поточного стану рахунку
-
-
-*/
-
-class Account {
-  private _balance: number;
-  public status: string;
-  
-  constructor(initialBalance: number) {
-      this._balance = initialBalance;
-      this.status = 'active';
-  }
-
-  public deposit(amount: number): void {
-      this._balance += amount;
-  }
-
-  public withdraw(amount: number): void {
-      if(this._balance - amount >= 0) {
-          this._balance -= amount;
-      } else {
-          console.log('Insufficient funds');
-      }
-  }
-
-  public get balance(): number {
-      return this._balance;
-  }
-
-  public set balance(value: number) {
-      this._balance = value;
-  }
-}
-
-const account = new Account(1000);
-// console.log('Initial balance: ', account.balance);
-account.balance = 2000;
-// console.log('Updated balance: ', account.balance);
-
-account.deposit(400);
-account.withdraw(1000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-Управління замовленнями:
-Створіть клас Order, що представляє замовлення з полями для 
-товарів (items), 
-загальної вартості (total),
-статусу замовлення (status)
-
-+ реалізуати методи для додавання товарів, 
-розрахунку загальної вартості та 
-відображення інформації про замовлення
+Управління автомобілем:
+Створіть клас Car, що представляє автомобіль з полями:
+- виробник (manufacturer),
+- поточна швидкість (speed),
+- максимальна швидкість (maxSpeed)
+Методи:
+- прискорення
+- сповільнення
+- відображення швидкості
 
 
 */
 
-class Order {
-  private _items: string[];
-  private _total: number;
-  private _status: string;
+class Car {
+  private _manufacturer: string;
+  private _speed: number;
+  private readonly _maxSpeed: number;
 
-  constructor() {
-      this._items = [];
-      this._total = 0;
-      this._status = 'pending';
+  constructor(manufacturer: string, maxSpeed: number) {
+    this._speed = 0;
+    this._manufacturer = manufacturer;
+    this._maxSpeed = maxSpeed;
   }
 
-  public addItem(item: string, price: number): void {
-      this._items.push(item);
-      this._total += price;
+  public accelerate(speedDelta: number): void {
+    if (this._speed + speedDelta <= this._maxSpeed) {
+      this._speed += speedDelta;
+    } else {
+      this._speed = this._maxSpeed;
+    }
   }
 
-  public calculateTotal(): number {
-      return this._total;
+  public decelerate(speedDelta: number): void {
+    if (this._speed - speedDelta >= 0) {
+      this._speed -= speedDelta;
+    } else {
+      this._speed = 0;
+    }
   }
 
-  public getOrderInfo(): void {
-      console.log('Items: ', this._items);
-      console.log('Total: ', this._total);
-      console.log('Status: ', this._status);
+  public get speed(): number {
+    return this._speed;
   }
 
-  public get items(): string[] {
-      return this._items;
+  public get manufacturer(): string {
+    return this._manufacturer;
   }
 
-  public get total(): number {
-      return this._total;
+  public get maxSpeed(): number {
+    return this._maxSpeed;
   }
 
-  public get status(): string {
-      return this._status;
-  }
-
-  public set status(value: string) {
-      this._status = value;
+  public set manufacturer(value: string) {
+    this._manufacturer = value;
   }
 }
 
-const order = new Order();
-order.addItem('Laptop', 10000);
-order.addItem('Smartphone', 15000);
-order.status = 'done';
+const car = new Car("Toyota", 200);
 
-order.getOrderInfo();
+car.accelerate(60);
+car.accelerate(40);
+car.decelerate(50);
+car.decelerate(50);
+
+console.log(car.speed);
