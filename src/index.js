@@ -1,38 +1,72 @@
-// function printNumber(num: number): void {
-//     console.log(`Value: ${num}`);
-// }
-// function printString(str: string): void {
-//   console.log(`Value: ${str}`);
-// }
-// printNumber(10);
-// printString("Hello, TypeScript!");
-function printValue(value) {
-    console.log(`Value: ${value}`);
+class Server {
 }
-const printValueArrow = (value) => {
-    console.log(`Value: ${value}`);
-};
-// printValueArrow(10);
-// printValueArrow('Hello');
-function processValue(value) {
-    if (typeof value === "number") {
-        console.log(`Value is a number: ${value.toFixed(2)}`);
+class HTTPServer extends Server {
+    start() {
+        console.log("HTTP Server started");
     }
-    else if (typeof value === "string") {
-        console.log(`Value is a string: ${value.toUpperCase()}`);
+    stop() {
+        console.log("HTTP Server stopped");
     }
 }
-// processValue(10);
-// processValue('Hello');
-class Box {
-    constructor(value) {
-        this.value = value;
+class WebSocketServer extends Server {
+    start() {
+        console.log("WebSocket Server started");
     }
-    getValue() {
-        return this.value;
+    stop() {
+        console.log("WebSocket Server stopped");
     }
 }
-const box1 = new Box(10);
-const box2 = new Box("Hello");
-console.log(typeof box1.getValue());
-console.log(typeof box2.getValue());
+const firstHTTPServer = new HTTPServer();
+const secondHTTPServer = new HTTPServer();
+// Декоратор для рестарту
+function addRestart(targetClass) {
+    targetClass.restart = function () {
+        console.log(`Restarting ${this.constructor.name}...`);
+        this.stop();
+        this.start();
+    };
+}
+const firstWSServer = new WebSocketServer();
+const secondWSServer = new WebSocketServer();
+// Декоратор для логування
+function addLogingStart(targetClass) {
+    const originalStart = targetClass.start.bind(targetClass);
+    const originalStop = targetClass.stop.bind(targetClass);
+    targetClass.start = function () {
+        console.log(`[${new Date().toLocaleString()}] Starting ${this.constructor.name}...`);
+        originalStart();
+    };
+    targetClass.stop = function () {
+        console.log(`[${new Date().toLocaleString()}] Stopping ${this.constructor.name}...`);
+        originalStop();
+    };
+}
+// Декоратор для перевірки доступу
+function addCheckAccessToStop(targetClass) {
+    const originalStop = targetClass.stop.bind(targetClass);
+    targetClass.stop = function () {
+        console.log(`Checking access for ${this.constructor.name}...`);
+        originalStop();
+    };
+}
+// Тести
+addRestart(firstHTTPServer);
+addRestart(firstWSServer);
+addLogingStart(firstHTTPServer);
+addLogingStart(firstWSServer);
+addCheckAccessToStop(firstHTTPServer);
+addCheckAccessToStop(firstWSServer);
+console.group("Декоратор");
+console.log(firstHTTPServer);
+firstHTTPServer.start();
+firstHTTPServer.restart();
+console.log(firstWSServer);
+firstWSServer.start();
+firstWSServer.restart();
+console.groupEnd();
+console.group("Без декоратору");
+console.log(secondHTTPServer);
+console.log(secondWSServer);
+secondHTTPServer.start();
+secondWSServer.start();
+console.groupEnd();
